@@ -26,6 +26,13 @@ random, and MegaMan can only hold two styles at a time. These patches change tha
     story, and disappears when there is nothing left to earn.
 
 
+Web patcher
+-----------
+  https://squivix.github.io/mmbn2-style-qol/
+  Pick your ROM, tick the changes you want and set any battle count (1-255).
+  Runs in your browser. The patch files below use 100 battles.
+
+
 Files
 -----
   bn2_styleqol_us / _eu       all four changes (use this one)

@@ -13,7 +13,9 @@ Style Change in Mega Man Battle Network 2 (GBA) takes 280 battles, the element i
 
 ## Download
 
-Get **`bn2_styleqol_v1.0.zip`** from the [latest release](../../releases/latest), or grab single patches from [`patches/`](patches/).
+**Easiest: the [web patcher](https://squivix.github.io/mmbn2-style-qol/).** Pick your ROM, tick the changes you want and set any battle count from 1 to 255 (presets 50 / 80 / 100 / 120 / 150 / 200). It runs entirely in your browser.
+
+Or use the regular patch files: get **`bn2_styleqol_v1.0.zip`** from the [latest release](../../releases/latest), or grab single patches from [`patches/`](patches/).
 
 | Patch | What it does |
 |---|---|
@@ -28,7 +30,7 @@ Get **`bn2_styleqol_v1.0.zip`** from the [latest release](../../releases/latest)
 - **Everything:** apply `bn2_styleqol`, nothing else.
 - **Only some changes:** use the `.ips` files of the ones you want. They can be applied on top of each other in any order. (`.bps` patches only go on a clean ROM, so with `.bps` you can pick just one.)
 
-The changes work on their own and together. Without "pick the element", the element is random among the ones the type doesn't have yet. Without "100 battles", the battles-left count starts from 280.
+The changes work on their own and together. Without "pick the element", the element is random among the ones the type doesn't have yet. Without "100 battles", the battles-left count starts from 280. The patch files use 100 battles; for another count, use the web patcher.
 
 ## Required ROM
 

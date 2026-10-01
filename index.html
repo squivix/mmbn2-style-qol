@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BN2 Style Change QoL Patcher</title>
+<meta name="description" content="Patch Mega Man Battle Network 2 (GBA) in your browser: faster Style Changes, pick the element, keep every style, battles-left counter.">
+<style>
+  :root {
+    --bg: #f4f6f8; --panel: #ffffff; --text: #1b2430; --muted: #5d6b7a; --line: #d9e0e7;
+    --accent: #1f6fd1; --accent-text: #ffffff; --ok: #1d7a3a; --err: #b3261e; --field: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f141a; --panel: #18202a; --text: #e6ecf2; --muted: #9aa8b6; --line: #2b3643;
+      --accent: #4c95ef; --accent-text: #0b1220; --ok: #5cc27a; --err: #ff8a80; --field: #0f141a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f141a; --panel: #18202a; --text: #e6ecf2; --muted: #9aa8b6; --line: #2b3643;
+    --accent: #4c95ef; --accent-text: #0b1220; --ok: #5cc27a; --err: #ff8a80; --field: #0f141a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 640px; margin: 0 auto; padding: 32px 16px 48px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  section {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 18px 18px 14px; margin-bottom: 16px;
+  }
+  h2 { font-size: 1rem; margin: 0 0 12px; }
+  h2 .n { color: var(--muted); font-weight: normal; margin-right: 6px; }
+  #drop {
+    display: block; border: 2px dashed var(--line); border-radius: 8px; padding: 22px 12px;
+    text-align: center; cursor: pointer; color: var(--muted);
+  }
+  #drop.over { border-color: var(--accent); color: var(--text); }
+  #drop strong { color: var(--accent); }
+  #file { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  #file:focus-visible + #drop { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .status { margin: 10px 0 0; min-height: 1.5em; overflow-wrap: anywhere; }
+  .status.ok { color: var(--ok); }
+  .status.err { color: var(--err); }
+  .opt { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .opt:first-of-type { border-top: 0; padding-top: 0; }
+  .opt input[type=checkbox] { margin-top: 4px; width: 18px; height: 18px; flex: none; accent-color: var(--accent); }
+  .opt label { font-weight: 600; }
+  .opt p { margin: 2px 0 0; color: var(--muted); font-size: 0.93rem; }
+  .count { margin-top: 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.95rem; }
+  .count input {
+    width: 5.5em; padding: 5px 8px; font: inherit; color: var(--text); background: var(--field);
+    border: 1px solid var(--line); border-radius: 6px;
+  }
+  .count input:disabled { opacity: 0.5; }
+  .count .presets button {
+    font: inherit; font-size: 0.85rem; padding: 3px 9px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--line); background: transparent; color: var(--text);
+  }
+  .count .presets button:disabled { opacity: 0.5; cursor: default; }
+  .count .presets { display: flex; gap: 6px; flex-wrap: wrap; }
+  #go {
+    width: 100%; padding: 12px; font: inherit; font-weight: 600; border: 0; border-radius: 8px;
+    background: var(--accent); color: var(--accent-text); cursor: pointer;
+  }
+  #go:disabled { opacity: 0.45; cursor: default; }
+  footer { color: var(--muted); font-size: 0.88rem; }
+  footer p { margin: 6px 0; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>BN2 Style Change QoL Patcher</h1>
+  <p class="sub">For Mega Man Battle Network 2 (GBA), USA or Europe. Everything runs in your browser; your ROM never leaves your computer.</p>
+
+  <section>
+    <h2><span class="n">1</span>Your ROM</h2>
+    <input type="file" id="file" accept=".gba,.bin,.agb">
+    <label id="drop" for="file">Drop your <strong>.gba</strong> file here, or click to choose it</label>
+    <p class="status" id="romStatus" role="status"></p>
+  </section>
+
+  <section>
+    <h2><span class="n">2</span>Changes</h2>
+    <div class="opt">
+      <input type="checkbox" id="f-100battles" data-feature="100battles" checked>
+      <div>
+        <label for="f-100battles">Fewer battles per Style Change</label>
+        <div class="count">
+          Style Change every
+          <input type="number" id="count" min="1" max="255" value="100" inputmode="numeric" aria-label="Battles per Style Change">
+          battles <span class="presets" id="presets"></span>
+        </div>
+        <p>The original game needs 280. Any number from 1 to 255.</p>
+      </div>
+    </div>
+    <div class="opt">
+      <input type="checkbox" id="f-pickelement" data-feature="pickelement" checked>
+      <div>
+        <label for="f-pickelement">Pick the element</label>
+        <p>At a Style Change MegaMan asks which element you want, offering the ones the new type doesn't have yet. The type is still decided by how you fight.</p>
+      </div>
+    </div>
+    <div class="opt">
+      <input type="checkbox" id="f-keepstyles" data-feature="keepstyles" checked>
+      <div>
+        <label for="f-keepstyles">Keep every style</label>
+        <p>No more overwriting: all 16 elemental styles plus Normal and Hub, paged in the MegaMan screen. Without "Pick the element", the element is random among the missing ones.</p>
+      </div>
+    </div>
+    <div class="opt">
+      <input type="checkbox" id="f-battlesleft" data-feature="battlesleft" checked>
+      <div>
+        <label for="f-battlesleft">Battles left</label>
+        <p>A small number in the MegaMan screen's title bar counts down to the next Style Change. No style points or hints about the next style.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <button id="go" disabled>Patch and download</button>
+    <p class="status" id="outStatus" role="status"></p>
+  </section>
+
+  <footer>
+    <p>Patch a copy of your ROM. Saves carry over. With "Keep every style", don't load a save holding more than three styles in the unpatched game.</p>
+    <p>Needs the clean ROM: USA (AE2E) CRC32 6D961F82 or Europe (AM2P) CRC32 66341F3B. The Legacy Collection is not supported.</p>
+    <p>Prefer a regular patcher? The .bps and .ips files are on the <a href="https://github.com/squivix/mmbn2-style-qol">GitHub page</a>.</p>
+  </footer>
+</main>
+
+<script src="patcher/patcher.js"></script>
+<script>
+(function () {
+  'use strict';
+  const Q = window.StyleQoL;
+  const $ = id => document.getElementById(id);
+  const file = $('file'), drop = $('drop'), romStatus = $('romStatus');
+  const count = $('count'), go = $('go'), outStatus = $('outStatus');
+  const boxes = Array.from(document.querySelectorAll('input[data-feature]'));
+  let rom = null, romName = '';
+
+  const hex = n => n.toString(16).toUpperCase().padStart(8, '0');
+  function say(el, text, cls) { el.textContent = text; el.className = 'status' + (cls ? ' ' + cls : ''); }
+
+  [50, 80, 100, 120, 150, 200].forEach(n => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = n;
+    b.addEventListener('click', () => { count.value = n; refresh(); });
+    $('presets').appendChild(b);
+  });
+
+  function countValue() {
+    const n = Number(count.value);
+    return Number.isInteger(n) && n >= Q.COUNT_MIN && n <= Q.COUNT_MAX ? n : null;
+  }
+
+  function refresh() {
+    const battles = $('f-100battles').checked;
+    count.disabled = !battles;
+    document.querySelectorAll('#presets button').forEach(b => { b.disabled = !battles; });
+    const any = boxes.some(b => b.checked);
+    const countOk = !battles || countValue() !== null;
+    go.disabled = !(rom && any && countOk);
+    if (battles && countValue() === null) say(outStatus, 'Battle count must be a whole number from 1 to 255.', 'err');
+    else if (!any) say(outStatus, 'Pick at least one change.', 'err');
+    else if (outStatus.classList.contains('err')) say(outStatus, '');
+  }
+
+  async function loadRom(f) {
+    rom = null; romName = '';
+    say(outStatus, '');
+    if (!f) { refresh(); return; }
+    say(romStatus, 'Reading ' + f.name + '...');
+    try {
+      const data = new Uint8Array(await f.arrayBuffer());
+      const id = Q.identify(data);
+      if (id.info) {
+        rom = data; romName = f.name;
+        say(romStatus, '✓ ' + id.info.name + ' (CRC32 ' + hex(id.crc) + ')', 'ok');
+      } else {
+        say(romStatus, 'This isn\'t a clean BN2 ROM (CRC32 ' + hex(id.crc) +
+            '). Use an unpatched USA (6D961F82) or Europe (66341F3B) ROM.', 'err');
+      }
+    } catch (e) {
+      say(romStatus, 'Couldn\'t read the file: ' + e.message, 'err');
+    }
+    refresh();
+  }
+
+  async function loadPatch(stem, region) {
+    const r = await fetch('patches/bn2_' + stem + '_' + region + '.ips');
+    if (!r.ok) throw new Error('Couldn\'t download patch ' + stem + ' (' + r.status + ')');
+    return new Uint8Array(await r.arrayBuffer());
+  }
+
+  go.addEventListener('click', async () => {
+    go.disabled = true;
+    say(outStatus, 'Patching...');
+    try {
+      const features = boxes.filter(b => b.checked).map(b => b.dataset.feature);
+      const res = await Q.build(rom, { features, count: countValue() }, loadPatch);
+      const base = romName.replace(/\.[^.]*$/, '') || 'bn2';
+      const name = base + ' (Style QoL).gba';
+      const url = URL.createObjectURL(new Blob([res.data], { type: 'application/octet-stream' }));
+      const a = document.createElement('a');
+      a.href = url; a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      say(outStatus, '✓ Saved ' + name + ' (CRC32 ' + hex(res.crc) + ')', 'ok');
+    } catch (e) {
+      say(outStatus, e.message, 'err');
+    }
+    refresh();
+  });
+
+  file.addEventListener('change', () => loadRom(file.files[0]));
+  ['dragenter', 'dragover'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e => loadRom(e.dataTransfer.files[0]));
+  boxes.forEach(b => b.addEventListener('change', refresh));
+  count.addEventListener('input', refresh);
+  refresh();
+})();
+</script>
+</body>
+</html>
