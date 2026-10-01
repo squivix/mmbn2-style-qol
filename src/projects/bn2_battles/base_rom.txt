@@ -1,0 +1,2 @@
+us bn2_us.gba
+eu bn2_eu.gba

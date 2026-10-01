@@ -1,0 +1,10 @@
+roms/
+build/
+tools/armips/
+tools/flips/
+tools/textpet/
+tools/mgba/
+__pycache__/
+projects/bn1_arealabels/labels.bin
+projects/bn1_arealabels/preview.png
+projects/bn1_chipcodes/glyphs.bin

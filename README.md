@@ -54,6 +54,10 @@ Patch a copy of your ROM. Existing save files work.
 - Style trading over link cable can offer only your first three styles (the trade screen has room for three).
 - As in the original game, a Style Change gives you the style without equipping it, and the NaviChip limit (5, or 8 for Team and Hub Style) still applies when switching.
 
+## Source
+
+The assembly source and build scripts are in [`src/`](src/) (MIT license). Building them reproduces the released patches exactly.
+
 ## Credits
 
 - Save layout: vgperson's [MMBN Save Editor](https://github.com/vgperson/MMBNSaveEditor)
@@ -61,4 +65,4 @@ Patch a copy of your ROM. Existing save files work.
 - Text: Prof. 9's [TextPet](https://github.com/Prof9/TextPet)
 - Tools: armips (Kingcom), Floating IPS (Alcaro), mGBA (endrift), Ghidra
 
-Mega Man Battle Network is © Capcom. This project distributes patches only, no game data.
+Mega Man Battle Network is © Capcom. This project distributes patches and source code only, no ROMs.
